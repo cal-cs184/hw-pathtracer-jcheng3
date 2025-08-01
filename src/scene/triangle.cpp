@@ -28,8 +28,41 @@ bool Triangle::has_intersection(const Ray &r) const {
   // function records the "intersection" while this function only tests whether
   // there is a intersection.
 
+  // vertices and edges
+  Vector3D v0 = p1;
+  Vector3D v1 = p2;
+  Vector3D v2 = p3;
+  Vector3D e1 = v1 - v0;
+  Vector3D e2 = v2 - v0;
 
-  return true;
+  Vector3D s = r.o - v0;
+  Vector3D s1 = cross(r.d, e2);
+  Vector3D s2 = cross(s, e1);
+
+  double det = dot(s1, e1);
+  double inv_det = 1.0 / det;
+
+  double u = dot(s2, e2);
+  double v = dot(s1, s);
+  double w = dot(s2, r.d);
+
+  double t = inv_det * (u);
+  double b1 = inv_det * (v);
+  double b2 = inv_det * (w);
+
+  if (b1 < 0.0 || b1 > 1.0) {
+    return false;
+  }
+
+  if (b2 < 0.0 || b1 + b2 > 1.0) {
+    return false;
+  }
+
+  if (t >= r.min_t && t <= r.max_t) {
+    return true;
+  }
+
+  return false;
 
 }
 
@@ -38,9 +71,59 @@ bool Triangle::intersect(const Ray &r, Intersection *isect) const {
   // implement ray-triangle intersection. When an intersection takes
   // place, the Intersection data should be updated accordingly
 
+  // vertices and edges
+  Vector3D v0 = p1;
+  Vector3D v1 = p2;
+  Vector3D v2 = p3;
+  Vector3D e1 = v1 - v0;
+  Vector3D e2 = v2 - v0;
 
-  return true;
+  Vector3D s = r.o - v0;
+  Vector3D s1 = cross(r.d, e2);
+  Vector3D s2 = cross(s, e1);
 
+  double det = dot(s1, e1);
+  double inv_det = 1.0 / det;
+
+  double u = dot(s2, e2);
+  double v = dot(s1, s);
+  double w = dot(s2, r.d);
+
+  double t = inv_det * (u);
+  double b1 = inv_det * (v);
+  double b2 = inv_det * (w);
+
+  if (b1 < 0.0 || b1 > 1.0) {
+    return false;
+  }
+
+  if (b2 < 0.0 || b1 + b2 > 1.0) {
+    return false;
+  }
+
+  // check intersection is within valid t range
+  if (t >= r.min_t && t <= r.max_t) {
+
+    // calculate barycentric coords
+    double b = 1.0 - b1 - b2;  // barycentric coordinate for v0
+
+    isect->t = t;
+
+    // interpolate normal with barycentric coordinates
+    isect->n = b * n1 + b1 * n2 + b2 * n3;
+    isect->n.normalize();  // normal is unit length
+
+    // primitive points to the primitive that was intersected (use the this pointer).
+    isect->primitive = this;
+    isect->bsdf = get_bsdf();
+
+    // update ray's max_t to this intersection point
+    const_cast<Ray&>(r).max_t = t;
+
+    return true;
+  }
+
+  return false;
 
 }
 
