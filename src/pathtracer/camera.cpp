@@ -202,8 +202,8 @@ Ray Camera::generate_ray(double x, double y) const {
   double sensorWidth = 2 * tan(hFovr / 2.0);
   double sensorHeight = 2 * tan(vFovr / 2.0);
 
-  double sensorX = (x - 0.5) * sensorWidth;
-  double sensorY = (y - 0.5) * sensorHeight;
+  double sensorX = (x - 1) * sensorWidth;
+  double sensorY = (y - 1) * sensorHeight;
 
   Vector3D dircamera = Vector3D(sensorX, sensorY, -1);
 
@@ -218,7 +218,7 @@ Ray Camera::generate_ray(double x, double y) const {
   ray.min_t = nClip;
   ray.max_t = fClip;
 
-  return Ray(pos, Vector3D(0, 0, -1));
+  return ray;
 
 }
 
