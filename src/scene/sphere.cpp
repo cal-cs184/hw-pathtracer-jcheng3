@@ -85,13 +85,6 @@ bool Sphere::intersect(const Ray &r, Intersection *i) const {
     return false;
   }
 
-  // check if t1 is closest valid intersection
-  if (t1 >= r.min_t && t1 <= r.max_t) {
-    return true;
-  } else if (t2 >= r.min_t && t2 <= r.max_t) {
-    return true;
-  }
-
   // closest valid intersection
   double t_intersect = -1;
 
@@ -105,16 +98,16 @@ bool Sphere::intersect(const Ray &r, Intersection *i) const {
   }
 
   // populate the intersection structure
-  isect->t = t_intersect;
+  i->t = t_intersect;
 
   Vector3D intersection_point = r.o + t_intersect * r.d;
 
   // surface normal (normalized vector from sphere center to intersection point)
-  isect->n = (intersection_point - o);  // vector from center to intersection
-  isect->n.normalize();
+  i->n = (intersection_point - o);  // vector from center to intersection
+  i->n.normalize();
 
-  isect->primitive = this;
-  isect->bsdf = get_bsdf();
+  i->primitive = this;
+  i->bsdf = get_bsdf();
 
   const_cast<Ray&>(r).max_t = t_intersect;
 

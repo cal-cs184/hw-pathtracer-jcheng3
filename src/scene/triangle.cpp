@@ -40,13 +40,14 @@ bool Triangle::has_intersection(const Ray &r) const {
   Vector3D s2 = cross(s, e1);
 
   double det = dot(s1, e1);
-  double inv_det = 1.0 / det;
 
-  // check if ray is parallel to triangle (determinant near zero)
+  // check if det is close to 0 so dont divide by 0 next
   const double EPSILON = 1e-8;
   if (det > -EPSILON && det < EPSILON) {
     return false;
   }
+
+  double inv_det = 1.0 / det;
 
   double u = dot(s2, e2);
   double v = dot(s1, s);
@@ -91,13 +92,14 @@ bool Triangle::intersect(const Ray &r, Intersection *isect) const {
   Vector3D s2 = cross(s, e1);
 
   double det = dot(s1, e1);
-  double inv_det = 1.0 / det;
 
-  // check if ray is parallel to triangle (determinant near zero)
+  // check if det is close to 0 so dont divide by 0 next
   const double EPSILON = 1e-8;
   if (det > -EPSILON && det < EPSILON) {
     return false;
   }
+
+  double inv_det = 1.0 / det;
 
   double u = dot(s2, e2);
   double v = dot(s1, s);
@@ -132,7 +134,6 @@ bool Triangle::intersect(const Ray &r, Intersection *isect) const {
     isect->primitive = this;
     isect->bsdf = get_bsdf();
 
-    // update ray's max_t to this intersection point
     const_cast<Ray&>(r).max_t = t;
 
     return true;

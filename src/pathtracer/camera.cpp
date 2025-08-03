@@ -199,11 +199,11 @@ Ray Camera::generate_ray(double x, double y) const {
   double vFovr = vFov * PI / 180.0;
 
   // get virtual camera sensor dimensions
-  double sensorWidth = 2 * tan(hFovr / 2.0);
-  double sensorHeight = 2 * tan(vFovr / 2.0);
+  double halfSensorWidth = tan(hFovr / 2.0);
+  double halfSensorHeight = tan(vFovr / 2.0);
 
-  double sensorX = (x - 1) * sensorWidth;
-  double sensorY = (y - 1) * sensorHeight;
+  double sensorX = (2 * x - 1) * halfSensorWidth;
+  double sensorY = (2 * y - 1) * halfSensorHeight;
 
   Vector3D dircamera = Vector3D(sensorX, sensorY, -1);
 
