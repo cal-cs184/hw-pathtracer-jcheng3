@@ -42,14 +42,21 @@ bool Triangle::has_intersection(const Ray &r) const {
   double det = dot(s1, e1);
   double inv_det = 1.0 / det;
 
+  // check if ray is parallel to triangle (determinant near zero)
+  const double EPSILON = 1e-8;
+  if (det > -EPSILON && det < EPSILON) {
+    return false;
+  }
+
   double u = dot(s2, e2);
   double v = dot(s1, s);
   double w = dot(s2, r.d);
 
   double t = inv_det * (u);
-  double b1 = inv_det * (v);
-  double b2 = inv_det * (w);
+  double b1 = inv_det * (v); //barycentric
+  double b2 = inv_det * (w); // barycentric
 
+  // check barycentric cords inside triangle
   if (b1 < 0.0 || b1 > 1.0) {
     return false;
   }
@@ -58,6 +65,7 @@ bool Triangle::has_intersection(const Ray &r) const {
     return false;
   }
 
+  // check intersection within range
   if (t >= r.min_t && t <= r.max_t) {
     return true;
   }
@@ -85,14 +93,21 @@ bool Triangle::intersect(const Ray &r, Intersection *isect) const {
   double det = dot(s1, e1);
   double inv_det = 1.0 / det;
 
+  // check if ray is parallel to triangle (determinant near zero)
+  const double EPSILON = 1e-8;
+  if (det > -EPSILON && det < EPSILON) {
+    return false;
+  }
+
   double u = dot(s2, e2);
   double v = dot(s1, s);
   double w = dot(s2, r.d);
 
   double t = inv_det * (u);
-  double b1 = inv_det * (v);
-  double b2 = inv_det * (w);
+  double b1 = inv_det * (v); //barycentric
+  double b2 = inv_det * (w); // barycentric
 
+  // check barycentric cords inside triangle
   if (b1 < 0.0 || b1 > 1.0) {
     return false;
   }
@@ -105,15 +120,15 @@ bool Triangle::intersect(const Ray &r, Intersection *isect) const {
   if (t >= r.min_t && t <= r.max_t) {
 
     // calculate barycentric coords
-    double b = 1.0 - b1 - b2;  // barycentric coordinate for v0
+    double b0 = 1.0 - b1 - b2;  // barycentric coordinate for v0
 
     isect->t = t;
 
     // interpolate normal with barycentric coordinates
-    isect->n = b * n1 + b1 * n2 + b2 * n3;
-    isect->n.normalize();  // normal is unit length
+    isect->n = b0 * n1 + b1 * n2 + b2 * n3;
+    isect->n.normalize();
 
-    // primitive points to the primitive that was intersected (use the this pointer).
+    // primitive points to the primitive that was intersected (use this pointer).
     isect->primitive = this;
     isect->bsdf = get_bsdf();
 
